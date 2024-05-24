@@ -1,0 +1,12 @@
+model{
+
+  lambda ~ dgamma(.0001,.0001)
+  alpha ~ dnorm(0,.001)
+  beta ~ dnorm(0,.001)
+
+  for (i in 1:nsubs) {
+    mu_SurveyY[i] <- alpha + (beta * SurveyX[i])
+    SurveyY[i] ~ dnorm(mu_SurveyY[i],lambda)
+  }
+
+}

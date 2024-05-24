@@ -1,0 +1,535 @@
+---
+title: "Data_cleaning"
+author: "Julie Svinth Nielsen"
+date: "2024-01-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r - packages}
+library(readr)
+library(tidyverse)
+library(ggplot2)
+library(corrplot)
+library(lme4)
+```
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+```{r}
+summary(m1)
+
+samples
+```
+
+
+```{r}
+df_2020 <- read.csv("2020_aus.csv", fileEncoding = "latin1")
+
+df_2021 <- read.csv("2021_aus.csv", fileEncoding = "latin1")
+
+df_2021_new <- read.csv("df_2021_new.csv", fileEncoding =  "latin1")
+
+# Remove apostrophy from column
+df_2021_new$how_productive_are_you_each_hour_when_working_remotely <- gsub("Â", "", as.factor(df_2021_new$how_productive_are_you_each_hour_when_working_remotely))
+
+```
+
+
+
+```{r}
+#Convert columns by index to factors
+columns_to_convert <- c(3:33, 42:73)  #
+
+
+df_2020[, columns_to_convert] <- lapply(df_2020[, columns_to_convert], factor)
+
+summary(df_2020)
+# Check for missing values
+#colSums(is.na(df_2020))
+
+# Example: Create a bar plot for Likert item 1
+ggplot(df_2020, aes(x = )) +
+  geom_bar() +
+  labs(title = "Distribution of Likert Item 1")
+
+# Example: Create a correlation plot
+corr_matrix <- cor(data[, c("likert_item_1", "likert_item_2", "likert_item_3")])
+corrplot(corr_matrix, method = "color")
+
+names(df_2020)
+
+
+new_column_names <- c("ID", 
+                      "year_born", 
+                      "gender",
+                      "industry",
+                      "industry_detailed",
+                      "current_occupation",
+                      "current_occupation_detaield",
+                      "organization_size",
+                      "do_you_manage_people",
+                      "household",
+                      "how_long_in_current_job",
+                      "metro_or_regional",
+                      "how_much_time_did_you_spend_remote_working_last_year",
+                      "last_year_org_encouraged_to_work_remotely",
+                      "last_year_org_wellprepared_for_me_workign_remotely",
+                      "last_year_common_for_people_in_org_to_work_remotely",
+                      "last_year_easy_to_get_permission_to_work_remotely",
+                      "last_year_easily_collaborate_with_collegues_when_working_remotely",
+                      "last_year_would_recommend_working_remotely_to_others",
+                      "last_year_how_much_time_would_you_have_preferred_to_work_remotely",
+                      "last_3_months_how_much_of_your_time_spend_working_remotely",
+                      "last_3_months_org_encouraged_to_work_remotely",
+                      "last_3_months_org_wellprepared_for_me_workign_remotely",
+                      "last_3_months_common_for_people_in_org_to_work_remotely",
+                      "last_3_months_easy_to_get_permission_to_work_remotely",
+                      "last_3_months_easily_collaborate_with_collegues_when_working_remotely",
+                      "last_3_months_would_recommend_working_remotely_to_others",
+                      "last_3_months_how_much_time_would_you_have_preferred_to_work_remotely",
+                      "post_covid_how_much_would_you_prefer_to_work_remotely",
+                      "post_covid_my_employer_would_encourage_remote_working",
+                      "post_covid_my_employer_would_make_changes_to_support_remote_working",
+                      "post_covid_I_would_have_more_choice_about_whether_to_work_remotely",
+                      "how_productive_are_you_each_hour_when_working_remotely",
+                      "workplace_how_many_hours_preparing_for_work_and_commuting",
+                      "workplace_how_many_hours_working",
+                      "workplace_how_many_hours_personal_and_family_time",
+                      "workplace_how_many_hours_caring_and_domestic_responsibilities",
+                      "remote_how_many_hours_preparing_for_work_and_commuting",
+                      "remote_how_many_hours_working",
+                      "remote_how_many_hours_personal_and_family_time",
+                      "remote_how_many_hours_caring_and_domestic_responsibilities",
+                      "most_significant_barrier_doing_work_remotely_1",
+                      "least_significant_barrier_doing_work_remotely_1",
+                        "most_significant_barrier_doing_work_remotely_2",
+                      "least_significant_barrier_doing_work_remotely_2",
+                        "most_significant_barrier_doing_work_remotely_3",
+                      "least_significant_barrier_doing_work_remotely_3",
+                       "most_significant_barrier_doing_work_remotely_4",
+                      "least_significant_barrier_doing_work_remotely_4",
+                       "most_significant_barrier_doing_work_remotely_5",
+                      "least_significant_barrier_doing_work_remotely_5",
+                       "most_significant_barrier_doing_work_remotely_6",
+                      "least_significant_barrier_doing_work_remotely_6",
+                        "most_significant_barrier_doing_work_remotely_7",
+                      "least_significant_barrier_doing_work_remotely_7",
+                        "most_significant_barrier_doing_work_remotely_8",
+                      "least_significant_barrier_doing_work_remotely_8",
+                       "most_significant_barrier_doing_work_remotely_9",
+                      "least_significant_barrier_doing_work_remotely_9",
+                       "most_significant_barrier_doing_work_remotely_10",
+                      "least_significant_barrier_doing_work_remotely_10",
+                      "best_aspect_of_remote_working_1",
+                      "worst_aspect_of_remote_working_1",
+                       "best_aspect_of_remote_working_2",
+                      "worst_aspect_of_remote_working_2",
+                      "best_aspect_of_remote_working_3",
+                      "worst_aspect_of_remote_working_3",
+                       "best_aspect_of_remote_working_4",
+                      "worst_aspect_of_remote_working_4",
+                      "best_aspect_of_remote_working_5",
+                      "worst_aspect_of_remote_working_5",
+                       "best_aspect_of_remote_working_6",
+                      "worst_aspect_of_remote_working_6"
+                      )
+
+# Rename all columns
+names(df_2020) <- new_column_names
+
+```
+
+```{r}
+# Rename all 2021 columns
+new_column_names_2021 <- c("ID", 
+                      "year_born", 
+                      "gender",
+                      "how_long_in_current_job",
+                      "industry",
+                      "current_occupation_detailed",
+                      "organization_size",
+                      "household",     #predictor                                    
+                      "metro_or_regional", 
+                      "how_much_time_did_you_spend_remote_working_last_year",
+                      "last_year_how_much_time_would_you_have_preferred_to_work_remotely",
+                      "this_year_how_much_time_did_you_spend_remote_working", 
+                      "this_year_how_much_time_would_you_have_preferred_to_work_remotely",
+                      "post_covid_how_much_would_you_prefer_to_work_remotely",
+                      "has_employer_changed_or_updated_remote_policy_since_covid",
+                      "last_six_months_part_of_day_remote_and_part_of_day_at_work",
+                      "how_often_do_you_work_this_way",
+                      "how_often_would_you_like_to_work_this_way",
+                      "policy_that_workers_must_be_at_workplace_some_of_the_time",
+                      "how_much_time_does_the_policy_require_you_to_be_at_work",
+                      "employer_policy_my_employers_remote_working_policy_suits_me",
+                      "employer_policy_I_get_to_choose_how_much_work_I_do_remotely", #predictor
+                      "employer_policy_I_choose_which_days_I_work_remotely",
+                      "employer_policy_my_manager_has_discretion_to_allow_or_deny_remote_work",
+                      "how_do_you_feel_about_your_employers_remote_working_policy",
+                      "last_6_months_org_encouraged_to_work_remotely",
+                      "last_6_months_org_wellprepared_for_me_working_remotely", # predictor
+                      "last_6_months_common_for_people_in_org_to_work_remotely",
+                      "last_6_months_easy_to_get_permission_to_work_remotely",
+                      "last_6_months_easily_collaborate_with_collegues_when_working_remotely", #predictor
+                      "last_6_months_working_remotely_reduced_my_chances_of_promotion",
+                      "last_6_months_i_take_more_reguar_breaks_while_working_remotely", #predictor
+                      "do_you_think_remote_working_is_positive_or_negative_for_your_employer",
+                      "who_is_most_supportive_of_remote_working_in_org",
+                      "post_covid_my_employer_would_encourage_remote_working",
+                      "post_covid_my_employer_would_make_changes_to_support_remote_working",
+                      "post_covid_I_would_have_more_choice_about_whether_to_work_remotely",
+                      "workplace_how_many_hours_preparing_for_work_and_commuting",
+                      "workplace_how_many_hours_working",
+                      "workplace_how_many_hours_caring_and_domestic_responsibilities",
+                      "workplace_how_many_hours_personal_and_family_time",
+                      "work_place_how_many_hours_sleeping",
+                      "remote_how_many_hours_preparing_for_work_and_commuting", #predictor
+                      "remote_how_many_hours_working", #predictor
+                      "remote_how_many_hours_caring_and_domestic_responsibilities", #predictor
+                      "remote_how_many_hours_personal_and_family_time",#predictors
+                      "remote_how_many_hours_sleeping", #predictor
+                      "offer_to_work_remotely_whenever_in_return_for_pay_cut",
+                      "what_is_the_biggest_pay_cut_you_would_accept",
+                      "have_caring_responsibilities_improved_or_worsened_over_last_6_months", #predictor
+                      "have_connectivity(internet)_improved_or_worsened_over_last_6_months",
+                      "have_org_software_and_systems_improved_or_worsened_over_last_6_months",
+                      "have_difficulty_collaborating_remotely_improved_or_worsened_over_last_6_months", #predictor
+                      "have_poor_management_improved_or_worsened_over_last_6_months", #predictor
+                      "have_IT_equipment_improved_or_worsened_over_last_6_months",
+                      "have_feeling_left_out_or_isolated_improved_or_worsened_over_last_6_months",
+                      "have_extra_costs_improved_or_worsened_over_last_6_months",
+                      "have_cyber_security_improved_or_worsened_over_last_6_months",
+                      "have_tasks_that_could_not_been_done_remotely_improved_or_worsened_over_last_6_months", #predictor
+                      "have_workspace(chair_lignt_noise)_improved_or_worsened_over_last_6_months",
+                      "have_motivation_improved_or_worsened_over_last_6_months", #predictor
+                      "have_management_discourages_remote_working_improved_or_worsened_over_last_6_months",
+                      "have_living_situation(location_home_size_living_arrangements)_improved_or_worsened_over_last_6_months", #predictor
+                      "have_lack_of_remote_working_skills_improved_or_worsened_over_last_6_months", #predictor
+                      "have_health_and_safety_when_working_remotely_improved_or_worsened_over_last_6_months",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_1",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_1",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_2",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_2",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_3",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_3",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_4",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_4",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_5",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_5",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_6",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_6",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_7",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_7",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_8",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_8",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_9",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_9",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_10",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_10",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_11",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_11",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_12",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_12",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_13",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_13",
+                      "at_work_and_colleagues_working_remotely_biggest_barrier_14",
+                      "at_work_and_colleagues_working_remotely_smallest_barrier_14",
+                      "on_days_i_work_remotely_i_feel_better",
+                      "on_days_i_work_remotely_i_am_more_active",
+                      "i_feel_better_On_days_when_i_see_my_colleagues_in_person",
+                      "do_you_manage_people_in_your_position",
+                      "do_employees_you_manage_ever_work_remotely",
+                      "i_have_discretion_to_offer_or_deny_remote_work_to_people_i_manage",
+                      "offering_remote_work_helps_to_retain_my_employees",
+                      "ofering_remote_work_helps_to_recruit_employees",
+                      "my_team_works_well_together_when_they_work_remotely",
+                      "i_find_it_easy_to_manage_employees_remotely",
+                      "i_find_it_easy_to_manage_poor_performers_remotely",
+                      "i_feel_well_prepared_to_manage_employees_remotely",
+                      "managing_people_remotely_makes_me_more_focused_on_results",
+                      "i_find_it_easy_to_contact_employees_when_they_work_remote",
+                      "how_productive_are_you_each_hour_when_working_remotely", #outcome
+                      "how_productive_are_the_employees_you_manage_each_hour_when_they_work_remotely"
+                      
+                      )
+
+
+# Rename all columns
+names(df_2021) <- new_column_names_2021
+
+
+#Convert columns by index to factors
+columns_to_convert_2021 <- c(3:37, 48,50:109)  #
+
+
+df_2021_new[, columns_to_convert_2021] <- lapply(df_2021_new[, columns_to_convert_2021], factor)
+
+
+autonomy_1 <- df_2021_new$employer_policy_I_get_to_choose_how_much_work_I_do_remotely
+
+# Create a new numeric vector using nested ifelse statements:
+SurveyM1 <- ifelse(autonomy_1 == "Strongly disagree", 1,
+                           ifelse(autonomy_1 == "Somewhat disagree", 2,
+                                  ifelse(autonomy_1 == "Neither agree nor disagree", 3,
+                                         ifelse(autonomy_1 == "Somewhat agree", 4,
+                                                ifelse(autonomy_1 == "Strongly agree", 5, NA)))))
+
+
+###  autonomy_2 ###
+
+autonomy_2 <- df_2021_new$employer_policy_I_choose_which_days_I_work_remotely
+
+# Create a new numeric vector using nested ifelse statements:
+SurveyM2 <- ifelse(autonomy_2 == "Strongly disagree", 1,
+                   ifelse(autonomy_2 == "Somewhat disagree", 2,
+                          ifelse(autonomy_2 == "Neither agree nor disagree", 3,
+                                 ifelse(autonomy_2 == "Somewhat agree", 4,
+                                        ifelse(autonomy_2 == "Strongly agree", 5, NA)))))
+
+
+result <- cor.test(SurveyM1, SurveyM2)
+
+# Print the summary of the correlation test
+print(result)
+```
+
+
+```{r - assessing data}
+
+#  Last year
+ggplot(df_2020, aes(x = how_much_time_did_you_spend_remote_working_last_year, fill =  how_much_time_did_you_spend_remote_working_last_year)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Distribution of time spend working remote last year")
+
+ggplot(df_2020, aes(x = last_year_org_encouraged_to_work_remotely, fill =  last_year_org_encouraged_to_work_remotely )) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Distribution of org encouraging to work remotely")
+
+
+ggplot(df_2020, aes(x = last_year_org_wellprepared_for_me_workign_remotely, fill =  last_year_org_wellprepared_for_me_workign_remotely )) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Distribution of org being prepared for me working remotely")
+
+ggplot(df_2020, aes(x = last_year_common_for_people_in_org_to_work_remotely, fill =  last_year_common_for_people_in_org_to_work_remotely )) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Distribution of how common it was to work remotely in org")
+
+ggplot(df_2020, aes(x = last_year_easy_to_get_permission_to_work_remotely, fill =  last_year_easy_to_get_permission_to_work_remotely )) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Distribution of how easy it was to get permission to work remotely")
+
+ggplot(df_2020, aes(x = last_year_easily_collaborate_with_collegues_when_working_remotely, fill = last_year_easily_collaborate_with_collegues_when_working_remotely)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Distribution of how easy it was to collaborate when working remotely")
+
+ggplot(df_2020, aes(x = last_year_would_recommend_working_remotely_to_others, fill = last_year_would_recommend_working_remotely_to_others)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Distribution of recommending working remotely")
+
+
+ggplot(df_2020, aes(x = last_year_how_much_time_would_you_have_preferred_to_work_remotely, fill = last_year_how_much_time_would_you_have_preferred_to_work_remotely)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Distribution of how much to prefer working remotely")
+
+
+```
+
+```{r}
+#write.csv(df_2020, "C:/Users/julie/OneDrive/Dokumenter/Uni stuff/Kandidat/Speciale/Thesis/df_2020.csv", row.names=FALSE)
+
+
+#write.csv(df_2021, "C:/Users/julie/OneDrive/Dokumenter/Uni stuff/Kandidat/Speciale/Thesis/df_2021_new.csv", row.names=FALSE)
+```
+
+```{r}
+
+df_2021_new$have_IT_equipment_improved_or_worsened_over_last_6_months <- as.factor(df_2021_new$have_IT_equipment_improved_or_worsened_over_last_6_months)
+
+
+
+# Assuming your dataframe is named 'your_data'
+selected_columns <- data.frame(df_2021_new)[66:93]
+
+
+barriers <- summary(data.frame(selected_columns))
+
+
+```
+
+
+```{r}
+
+# from columns 10 to 66 and 108
+
+# order likert levels - productivity outcome
+df_2021_new$how_productive_are_you_each_hour_when_working_remotely <- ordered(df_2021_new$how_productive_are_you_each_hour_when_working_remotely, levels = c(
+"Im 50% less productive when working remotely (or worse)", 
+"Im 40% less productive when working remotely", 
+"Im 30% less productive when working remotely", 
+"Im 20% less productive when working remotely", 
+"Im 10% less productive when working remotely", 
+"My productivity is about same when I work remotely", 
+"Im 10% more productive when working remotely", 
+"Im 20% more productive when working remotely", 
+"Im 30% more productive when working remotely", 
+"Im 40% more productive when working remotely", 
+"Im 50% more productive when working remotely (or more)"))
+
+
+# levels or remote work
+df_2021_new$this_year_how_much_time_did_you_spend_remote_working <- ordered(df_2021_new$this_year_how_much_time_did_you_spend_remote_working, levels = c(
+"Rarely or never",
+"Less than 10% of my time",
+"10%",
+"20%",
+"30%",
+"40%",
+"50% - I spent about half of my time remote working",
+"60%",
+"70%",
+"80%",
+"90%",
+"100% - I spent all of my time remote working"))
+
+correlation_result <- cor.test(
+  as.numeric(df_2021_new$this_year_how_much_time_did_you_spend_remote_working), as.numeric(df_2021_new$how_productive_are_you_each_hour_when_working_remotely), method = "spearman")
+
+
+print(correlation_result)
+
+
+# levels of policy I get to choose how much work I do remotely
+df_2021_new$employer_policy_I_get_to_choose_how_much_work_I_do_remotely <- ordered(df_2021_new$employer_policy_I_get_to_choose_how_much_work_I_do_remotely, levels = c(
+"Strongly disagree",
+"Somewhat disagree",
+"Neither agree nor disagree",
+"Somewhat agree",
+"Strongly agree"))
+
+
+# levels of policy I choose which days I work remotely
+df_2021_new$employer_policy_I_choose_which_days_I_work_remotely <- ordered(df_2021_new$employer_policy_I_choose_which_days_I_work_remotely, levels = c(
+"Strongly disagree",
+"Somewhat disagree",
+"Neither agree nor disagree",
+"Somewhat agree",
+"Strongly agree"))
+
+
+# levels of last 6 months easy to get permission to work remotely
+df_2021_new$last_6_months_easy_to_get_permission_to_work_remotely <- ordered(df_2021_new$last_6_months_easy_to_get_permission_to_work_remotely, levels = c(
+"Strongly disagree",
+"Somewhat disagree",
+"Neither agree nor disagree",
+"Somewhat agree",
+"Strongly agree"))
+
+
+# levels of my employers remote working policy suits me
+df_2021_new$employer_policy_my_employers_remote_working_policy_suits_me <- ordered(df_2021_new$employer_policy_my_employers_remote_working_policy_suits_me, levels = c(
+"Strongly disagree",
+"Somewhat disagree",
+"Neither agree nor disagree",
+"Somewhat agree",
+"Strongly agree"))
+
+
+# levels of how do you feel about your employers remote working policy
+df_2021_new$how_do_you_feel_about_your_employers_remote_working_policy <- ordered(df_2021_new$how_do_you_feel_about_your_employers_remote_working_policy, levels = c(
+"Strongly negative",
+"Somewhat negative",
+"Neither positive nor negative",
+"Somewhat positive",
+"Strongly positive"))
+
+```
+
+The Spearman's rank correlation coefficient (rho) is approximately 0.167, suggesting a weak positive monotonic relationship between the time spent remote working and the perceived productivity during remote work. The p-value indicates that this correlation is statistically significant.
+
+```{r}
+# Level of remote work
+remote_hist <- ggplot(df_2021_new, aes(x = this_year_how_much_time_did_you_spend_remote_working, fill = this_year_how_much_time_did_you_spend_remote_working)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Time_spent_remote_working")
+
+remote_hist
+
+
+# Productivity
+productivity_hist <- ggplot(df_2021_new, aes(x = how_productive_are_you_each_hour_when_working_remotely, fill = how_productive_are_you_each_hour_when_working_remotely)) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))+
+  labs(title = "Time_spent_remote_working")
+
+productivity_hist
+
+```
+
+```{r}
+
+# Count the number of people who chose differently
+different_responses_count <- sum(!is.na(df_2021_new$remote_how_many_hours_working) & 
+                                  !is.na(df_2021_new$workplace_how_many_hours_working) & 
+                                  df_2021_new$remote_how_many_hours_working != df_2021_new$workplace_how_many_hours_working)
+
+# Print the result
+print(paste("Number of people who chose differently:", different_responses_count))
+
+
+# Create a new variable for work hours difference
+df_2021_new$work_hours_difference <- NA
+
+# Assign values based on the comparison
+df_2021_new$work_hours_difference[df_2021_new$remote_how_many_hours_working > df_2021_new$workplace_how_many_hours_working] <- "Remote More"
+df_2021_new$work_hours_difference[df_2021_new$remote_how_many_hours_working < df_2021_new$workplace_how_many_hours_working] <- "Workplace More"
+df_2021_new$work_hours_difference[df_2021_new$remote_how_many_hours_working == df_2021_new$workplace_how_many_hours_working] <- "Equal"
+
+# Print the result
+print(df_2021_new)
+
+#How many works more at home, more at workplace or equally the same
+table(df_2021_new$work_hours_difference)
+
+m1 <- lm(remote_how_many_hours_working~workplace_how_many_hours_working, data = df_2021_new)
+
+summary(m1)
+
+```
+
+```{r}
+
+samples
+```
+
+```{r}
+traceplot(x, ...)
+## S4 method for signature 'rjags'
+traceplot(samples$BUGSoutput$sims.list$alpha_M1, mfrow = c(1, 1), varname = NULL,
+  match.head = TRUE, ask = TRUE,
+  col = rainbow( samples$n.chains ),
+  lty = 1, lwd = 1)
+
+
+```
+
+
+```{r}
+samples_ORR <- samples
+```
+
